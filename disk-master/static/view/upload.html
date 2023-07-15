@@ -59,10 +59,10 @@
     var upUrl = "/file/upload?" + queryParams();
     var upEntry = localStorage.getItem("uploadEntry");
     if (upEntry != "" ) {
-      if (upEntry.indexOf("http:")>=0) {
+      if (upEntry!=null&&upEntry.indexOf("http:")>=0) {
         upUrl = upEntry + "/file/upload?" + queryParams();
       } else {
-        upUrl = "http://" + upEntry + "/file/upload?" + queryParams();
+        upUrl = "http://127.0.0.1:8081/api/v1/file/upload?" + queryParams();
       }
     }
     $.ajax({

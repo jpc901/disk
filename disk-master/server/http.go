@@ -12,7 +12,7 @@ import (
 )
 
 type HttpServer struct {
-	port   string
+	port   int
 	server *http.Server
 }
 
@@ -25,12 +25,12 @@ func GetHttpServerInstance(Router *gin.Engine) *HttpServer {
 	if httpServer != nil {
 		return httpServer
 	}
-	port := global.Config.Port
+	port := global.Config.ServerConfig.Port
 	once.Do(func() {
 		httpServer = &HttpServer{
 			port: port,
 			server: &http.Server{
-				Addr:           fmt.Sprintf(":%s", port),
+				Addr:           fmt.Sprintf(":%d", port),
 				Handler:        Router,
 			},
 		}
@@ -44,10 +44,10 @@ func (h *HttpServer) Start() {
 			log.Error(err)
 		}
 	}()
-	log.Infof("Http Server is working on port: %s ～～～", h.port)
+	log.Infof("Http Server is working on port: %d ～～～", h.port)
 	go func() {
 		if err := h.server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Http Driver listen: %s\n", err)
+			log.Fatalf("Http Driver listen: %d\n", err)
 		}
 	}()
 }
