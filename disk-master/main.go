@@ -16,6 +16,7 @@ import (
 func main() {
 	global.Config.InitConfig(".")
 	log.Debug(global.Config.ServerConfig.Port)
+	global.DB.Init(*global.Config.MySQLConfig)
 
 	// start http server
 	router := router.Init()
@@ -24,7 +25,7 @@ func main() {
 
 	// exit
 	quit := make(chan os.Signal)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM) // nolint
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 	<-quit
 	log.Info("Merak Shutdown Server ...")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
