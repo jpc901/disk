@@ -3,16 +3,17 @@ package router
 import (
 	"disk-master/router/health"
 	"disk-master/router/system"
+	"disk-master/router/user"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 )
 
-
 type Routers struct {
 	Health health.RouterGroup
 	System system.RouterGroup
+	User   user.RouterGroup
 }
 
 var RouterGroupApp = new(Routers)
@@ -35,12 +36,13 @@ func Init() *gin.Engine {
 
 	systemRouter := RouterGroupApp.System
 	healthRouter := RouterGroupApp.Health
-
+	userRouter := RouterGroupApp.User
 	// out api
 	OutRouter := Router.Group("api")
 	{
 		systemRouter.InitUploadRouter(OutRouter)
 		systemRouter.InitFileOperateRouter(OutRouter)
+		userRouter.InitUserRouter(OutRouter)
 	}
 
 	// in api

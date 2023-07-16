@@ -66,6 +66,7 @@ func (fo *FileOperateApi) FileDelete(c *gin.Context) {
 		response.BuildErrorResponse(err, c)
 		return
 	}
+	// 只删缓存
 	fileMeta := fileMetaService.GetFileMeta(requestData.FileHash)
 	os.Remove(fileMeta.Location)
 	fileMetaService.RemoveFileMeta(requestData.FileHash)
