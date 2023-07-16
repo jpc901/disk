@@ -26,9 +26,7 @@ test_data
 go.mod
 go.sum
 
-*/.DS_Store 
-*/.gitignore
-.gitignore
+*/.DS_Store
 tmpfile/
 config.yaml
 .DS_Store
