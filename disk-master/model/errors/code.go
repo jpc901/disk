@@ -6,4 +6,6 @@ const (
 	InvalidParameterCode    ErrorCode = 400
 	InternalServerErrorCode ErrorCode = 500
 	FileUploadFailedCode    ErrorCode = 1001
+	GetFileMetaFailedCode 	ErrorCode = 1002
+	FileUpdateFailedCode	ErrorCode = 1003
 )

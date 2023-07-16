@@ -3,6 +3,10 @@ package system
 import (
 	myDB "disk-master/dao/mysql"
 	"disk-master/model"
+	Err "disk-master/model/errors"
+	"disk-master/model/request"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type FileMetaService struct {}
@@ -16,6 +20,26 @@ func init() {
 
 func (fm *FileMetaService) UpdateFileMeta(fileMeta model.FileMeta) {
 	fileMetaMap[fileMeta.FileSha1] = fileMeta
+}
+
+func (fm *FileMetaService) UpdateFile(updateRequest *request.FileUpdateRequest) (*model.FileMeta, error) {
+	if updateRequest.OperateType != "0" {
+		log.Error("operate type required is 0")
+		return nil, Err.NewFileUpdateError("operate type required is 0")
+	}
+	// TODO: 要改成从缓存中取
+	curFileMeta, err := fm.GetFileMetaDB(updateRequest.FileHash)
+	if err != nil || curFileMeta == nil{
+		log.Error("get file meta failed")
+		return nil, err
+	}
+	curFileMeta.FileName = updateRequest.FileName
+	// TODO: 要改成更新缓存从而更新用户表
+	if err := fm.UpdateFileMetaDB(*curFileMeta); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+	return curFileMeta, nil
 }
 
 // UpdateFileMetaDB:新增/更新文件元信息到mysql中

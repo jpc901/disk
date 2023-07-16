@@ -1,0 +1,20 @@
+package system
+
+import (
+	v1 "disk-master/api/v1"
+
+	"github.com/gin-gonic/gin"
+)
+
+type FileOperateRouter struct {}
+
+func (fo *FileOperateRouter)InitFileOperateRouter(Router *gin.RouterGroup) {
+	fileOperateRouterV1 := Router.Group("v1/file")
+	fileOperateApiV1 := v1.ApiGroupApp.UploadApiGroup.FileOperateApi
+	{
+		fileOperateRouterV1.GET("meta", fileOperateApiV1.GetFileMeta)
+		fileOperateRouterV1.POST("download", fileOperateApiV1.FileDownload)
+		fileOperateRouterV1.DELETE("delete", fileOperateApiV1.FileDelete)
+		fileOperateRouterV1.PUT("update", fileOperateApiV1.FileUpdate)
+	}
+}

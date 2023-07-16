@@ -27,3 +27,18 @@ func NewUploadFailedError(detail interface{}) *Error {
 		Detail:  detail,
 	}
 }
+
+func NewGetFileMetaError(detail interface{}) *Error {
+	return &Error{
+		Code: GetFileMetaFailedCode,
+		Message: "get file meta failed",
+		Detail: detail,
+	}
+}
+func NewFileUpdateError(detail interface{}) *Error {
+	return &Error{
+		Code: GetFileMetaFailedCode,
+		Message: "file meta update failed",
+		Detail: detail,
+	}
+}

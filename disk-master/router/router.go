@@ -40,6 +40,7 @@ func Init() *gin.Engine {
 	OutRouter := Router.Group("api")
 	{
 		systemRouter.InitUploadRouter(OutRouter)
+		systemRouter.InitFileOperateRouter(OutRouter)
 	}
 
 	// in api

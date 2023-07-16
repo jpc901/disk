@@ -2,10 +2,12 @@ package system
 
 import "disk-master/service"
 
-type ApiGroup struct{
+type ApiGroup struct {
 	UploadApi
+	FileOperateApi
 }
 
 var (
-	uploadService         = service.ServiceGroupApp.SystemServiceGroup.UploadService
+	uploadService = service.ServiceGroupApp.SystemServiceGroup.UploadService
+	fileMetaService = service.ServiceGroupApp.SystemServiceGroup.FileMetaService
 )

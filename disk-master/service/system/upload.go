@@ -45,6 +45,7 @@ func (up *UploadService) UploadFile(fileHeader *multipart.FileHeader) error {
 	newFile.Seek(0, 0)
 	fileMeta.FileSha1 = util.FileSha1(newFile)
 
+	FileMetaServiceApp.UpdateFileMeta(fileMeta)
 	err = FileMetaServiceApp.UpdateFileMetaDB(fileMeta)
 	if err == nil {
 		log.Info("success [^_^]")
