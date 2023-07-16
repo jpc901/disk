@@ -74,3 +74,4 @@ func NewPasswordError(detail interface{}) *Error {
 		Detail: detail,
 	}
 }
+

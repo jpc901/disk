@@ -2,6 +2,7 @@ package system
 
 import (
 	v1 "disk-master/api/v1"
+	"disk-master/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,6 +11,7 @@ type FileOperateRouter struct {}
 
 func (fo *FileOperateRouter)InitFileOperateRouter(Router *gin.RouterGroup) {
 	fileOperateRouterV1 := Router.Group("v1/file")
+	fileOperateRouterV1.Use(middleware.JwtAuth())
 	fileOperateApiV1 := v1.ApiGroupApp.UploadApiGroup.FileOperateApi
 	{
 		fileOperateRouterV1.GET("meta", fileOperateApiV1.GetFileMeta)
