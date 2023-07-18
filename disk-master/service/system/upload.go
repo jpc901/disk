@@ -16,7 +16,7 @@ type UploadService struct{}
 
 
 
-func (up *UploadService) UploadFile(fileHeader *multipart.FileHeader) error {
+func (up *UploadService) UploadFile(username string, fileHeader *multipart.FileHeader) error {
 	file, err := fileHeader.Open()
 	if err != nil {
 		log.Errorf("file open failed, error: %v",err)
@@ -47,8 +47,15 @@ func (up *UploadService) UploadFile(fileHeader *multipart.FileHeader) error {
 
 	FileMetaServiceApp.UpdateFileMeta(fileMeta)
 	err = FileMetaServiceApp.UpdateFileMetaDB(fileMeta)
-	if err == nil {
-		log.Info("success [^_^]")
+	if err != nil {
+		log.Error("update file db failed")
+		return err
 	}
-	return err
+	err = FileMetaServiceApp.UpdateUserFileMetaDB(username ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
+	if err != nil {
+		log.Error("update user file db failed")
+		return err
+	}
+	log.Info("success [^_^]")
+	return nil
 }

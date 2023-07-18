@@ -18,5 +18,6 @@ func (fo *FileOperateRouter)InitFileOperateRouter(Router *gin.RouterGroup) {
 		fileOperateRouterV1.POST("download", fileOperateApiV1.FileDownload)
 		fileOperateRouterV1.DELETE("delete", fileOperateApiV1.FileDelete)
 		fileOperateRouterV1.PUT("update", fileOperateApiV1.FileUpdate)
+		fileOperateRouterV1.GET("query", fileOperateApiV1.QueryUserFile)
 	}
 }

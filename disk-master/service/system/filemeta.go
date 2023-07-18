@@ -47,6 +47,11 @@ func (fm *FileMetaService) UpdateFileMetaDB(fileMeta model.FileMeta) error {
 	return myDB.OnFileUploadFinished(fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize, fileMeta.Location)
 }
 
+// 更新文件原信息到mysql中
+func (fm *FileMetaService) UpdateUserFileMetaDB(username, fileSha1, fileName string, fileSize int64) error {
+	return myDB.OnUserFileUploadFinished(username, fileSha1, fileName, fileSize)
+}
+
 //GetFileMetaDB:从mysql获取文件元信息
 func (fm *FileMetaService) GetFileMetaDB(fileSha1 string) (*model.FileMeta, error) {
 	tmpFile, err := myDB.GetFileMeta(fileSha1)
@@ -62,6 +67,10 @@ func (fm *FileMetaService) GetFileMetaDB(fileSha1 string) (*model.FileMeta, erro
 	return fileMeta, nil
 }
 
+func (fm *FileMetaService) GetUserFileMetaDB(username string, limit int) ([]*model.UserFileMeta, error) {
+	return myDB.QueryUserFileMeta(username, limit)
+}
+
 // GetFileMeta:通过Sha1获取文件的元信息对象
 func (fm *FileMetaService) GetFileMeta(fileSha1 string) model.FileMeta {
 	return fileMetaMap[fileSha1]
@@ -71,3 +80,4 @@ func (fm *FileMetaService) GetFileMeta(fileSha1 string) model.FileMeta {
 func (fm *FileMetaService) RemoveFileMeta(fileSha1 string) {
 	delete(fileMetaMap, fileSha1)
 }
+

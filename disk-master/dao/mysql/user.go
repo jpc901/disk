@@ -30,7 +30,7 @@ func UserSignUp(uuid int64, username string, passwd string) error {
 }
 
 
-// UserSignin : 判断密码是否一致
+// UserSignIn : 判断密码是否一致
 func UserSignIn(username string, encpwd string) error {
 	stmt, err := global.DB.GetConn().Prepare("select * from tbl_user where user_name=? limit 1")
 	if err != nil {

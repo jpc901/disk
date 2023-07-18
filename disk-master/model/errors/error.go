@@ -75,3 +75,20 @@ func NewPasswordError(detail interface{}) *Error {
 	}
 }
 
+
+func NewGetUserFileError(detail interface{}) *Error {
+	return &Error{
+		Code: GetUserFileErrorCode,
+		Message: "get user file failed",
+		Detail: detail,
+	}
+}
+
+
+func NewFastUploadError(detail interface{}) *Error {
+	return &Error{
+		Code: FastUploadFileErrorCode,
+		Message: "fast upload file failed",
+		Detail: detail,
+	}
+}

@@ -12,4 +12,6 @@ const (
 	UserExistCode			ErrorCode = 1005
 	UserNotExistCode 		ErrorCode = 1006
 	PasswordErrorCode		ErrorCode = 1007
+	GetUserFileErrorCode 	ErrorCode = 1008
+	FastUploadFileErrorCode	ErrorCode = 1009
 )

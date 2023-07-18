@@ -89,3 +89,19 @@ func (fo *FileOperateApi) FileUpdate(c *gin.Context) {
 	}
 	response.BuildOkResponse(http.StatusOK, data, c)
 }
+
+func (fo *FileOperateApi) QueryUserFile(c *gin.Context) {
+	var requestData request.GetUserFileRequest
+	if err := c.ShouldBind(&requestData); err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	data, err := fileMetaService.GetUserFileMetaDB(requestData.Username, requestData.Limit)
+	if err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(Err.NewGetUserFileError("获取用户文件失败"), c)
+		return
+	}
+	response.BuildOkResponse(http.StatusOK, data, c)
+}
