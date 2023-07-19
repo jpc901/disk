@@ -61,3 +61,7 @@ func (up *UploadApi) FastUploadFile(c *gin.Context) {
 	}
 	response.BuildOkResponse(http.StatusOK, "秒传成功", c)
 }
+
+func (up *UploadApi) MpUploadFileInit(c *gin.Context) {
+	
+}
