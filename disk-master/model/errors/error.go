@@ -92,3 +92,11 @@ func NewFastUploadError(detail interface{}) *Error {
 		Detail: detail,
 	}
 }
+
+func NewMultipleUploadError(detail interface{}) *Error {
+	return &Error{
+		Code: MultipleInitFailedCode,
+		Message: "Multiple Upload failed",
+		Detail: detail,
+	}
+}

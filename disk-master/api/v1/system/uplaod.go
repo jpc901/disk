@@ -63,5 +63,28 @@ func (up *UploadApi) FastUploadFile(c *gin.Context) {
 }
 
 func (up *UploadApi) MpUploadFileInit(c *gin.Context) {
-	
+	var requestData request.MultipleInitRequest
+	if err := c.ShouldBind(&requestData); err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	// 处理信息存入缓存
+	uploadService.InitMultipleUploadFile(requestData)
+	response.BuildOkResponse(http.StatusOK, "分块初始化成功", c)
+}
+
+func (up *UploadApi) UploadPart(c *gin.Context) {
+	var requestData request.UploadMultipleRequest
+	if err := c.ShouldBind(&requestData); err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	err := uploadService.MultipleUploadFile(requestData)
+	if err != nil {
+		log.Error("multiple upload file failed err:", err)
+		response.BuildErrorResponse(Err.NewMultipleUploadError("分块上传失败"), c)
+	}
+	response.BuildOkResponse(http.StatusOK, "分块上传成功", c)
 }

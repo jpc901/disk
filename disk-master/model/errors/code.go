@@ -14,4 +14,5 @@ const (
 	PasswordErrorCode		ErrorCode = 1007
 	GetUserFileErrorCode 	ErrorCode = 1008
 	FastUploadFileErrorCode	ErrorCode = 1009
+	MultipleInitFailedCode  ErrorCode = 1010
 )

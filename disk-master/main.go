@@ -18,6 +18,7 @@ func main() {
 	log.Debug(global.Config.ServerConfig.Port)
 	global.DB.Init(*global.Config.MySQLConfig)
 	global.RDB.Init(*global.Config.RedisConfig)
+	defer global.RDB.GetConn().Close()
 	// start http server
 	router := router.Init()
 	httpServer := server.GetHttpServerInstance(router)

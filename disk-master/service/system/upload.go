@@ -1,8 +1,11 @@
 package system
 
 import (
+	"context"
+	"disk-master/global"
 	"disk-master/model"
 	"disk-master/model/enum"
+	"disk-master/model/request"
 	"io"
 	"mime/multipart"
 	"os"
@@ -57,5 +60,45 @@ func (up *UploadService) UploadFile(username string, fileHeader *multipart.FileH
 		return err
 	}
 	log.Info("success [^_^]")
+	return nil
+}
+
+func (up *UploadService) InitMultipleUploadFile(multipleInfo request.MultipleInitRequest) {
+	global.RDB.GetConn().HSet(context.Background(),
+		multipleInfo.UploadId,
+		"fileName", multipleInfo.FileName,
+		"fileSize", multipleInfo.FileSize,
+		"chunkSize", multipleInfo.ChunkSize,
+		"chunkCount", multipleInfo.ChunkCount,
+		"fileHash", multipleInfo.FileHash,
+	)
+}
+
+func (up *UploadService) MultipleUploadFile(multipleInfo request.UploadMultipleRequest) error {
+	// 将chunk存入本地
+	file, err := multipleInfo.File.Open()
+	if err != nil {
+		log.Error("open file failed, err", err)
+		return err
+	}
+	defer file.Close()
+
+	filePath := enum.UploadPath + multipleInfo.UploadId + multipleInfo.CurChunk
+	newFile, err := os.Create(filePath)
+	if err != nil {
+		log.Error("create file failed, err: ", err)
+		return err
+	}
+	defer newFile.Close()
+	io.Copy(newFile, file)
+
+	// 将chunk信息存入redis
+	global.RDB.GetConn().HSet(context.Background(),
+		multipleInfo.UploadId,
+		"curChunk"+multipleInfo.CurChunk, multipleInfo.CurChunk,
+		"chunkSize"+multipleInfo.CurChunk, multipleInfo.ChunkSize,
+	)
+
+	log.Infof("[upload chunk success](^_^): uploadId %s, currentChunk %s", multipleInfo.UploadId, multipleInfo.CurChunk)
 	return nil
 }

@@ -31,7 +31,26 @@ type GetUserFileRequest struct {
 
 type FastUploadRequest struct {
 	Username string `form:"username" binding:"required"`
-	FileHash    string `form:"fileHash" binding:"required"`
-	FileName    string `form:"fileName" binding:"required"`
-	FileSize 	int64  `form:"fileSize" binding:"required"`
+	FileHash string `form:"fileHash" binding:"required"`
+	FileName string `form:"fileName" binding:"required"`
+	FileSize int64  `form:"fileSize" binding:"required"`
+}
+
+type MultipleInitRequest struct {
+	UploadId   string `json:"uploadId" binding:"required"`
+	FileHash   string `form:"fileHash" binding:"required"`
+	FileName   string `form:"fileName" binding:"required"`
+	FileSize   int64  `form:"fileSize" binding:"required"`
+	ChunkCount int64  `form:"chunkCount" binding:"required"`
+	ChunkSize  int64  `form:"chunkSize" binding:"required"`
+}
+
+type UploadMultipleRequest struct {
+	File      *multipart.FileHeader `form:"file" binding:"required"`
+	UploadId  string                `json:"uploadId" binding:"required"`
+	FileHash  string                `form:"fileHash" binding:"required"`
+	FileName  string                `form:"fileName" binding:"required"`
+	FileSize  int64                 `form:"fileSize" binding:"required"`
+	CurChunk  string                `form:"curChunk" binding:"required"`
+	ChunkSize int64                 `form:"chunkSize" binding:"required"`
 }
