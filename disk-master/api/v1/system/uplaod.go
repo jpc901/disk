@@ -88,3 +88,37 @@ func (up *UploadApi) UploadPart(c *gin.Context) {
 	}
 	response.BuildOkResponse(http.StatusOK, "分块上传成功", c)
 }
+
+func (up *UploadApi) CheckChunkExist(c *gin.Context) {
+	var requestData request.CheckChunkExistRequest
+	if err := c.ShouldBindQuery(&requestData); err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	err := uploadService.CheckChunkExist(requestData)
+	if err != nil {
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	response.BuildOkResponse(http.StatusOK, "chunk 存在", c)
+}
+
+// 合并分块， 删除redis数据，上传到db
+func (up *UploadApi) MergeChunk(c *gin.Context) {
+	var requestData request.MultipleInitRequest
+	if err := c.ShouldBind(&requestData); err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
+	uidAny, _ := c.Get("uid")
+	uid := uidAny.(int64)
+	err := uploadService.MergeAndSave(uid, requestData)
+	if err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(Err.NewMergeChunkError("合并失败"), c)
+		return
+	}
+	response.BuildOkResponse(http.StatusOK, "merge 成功", c)
+}

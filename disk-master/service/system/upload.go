@@ -6,9 +6,11 @@ import (
 	"disk-master/model"
 	"disk-master/model/enum"
 	"disk-master/model/request"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
+	"strconv"
 	"time"
 
 	util "github.com/jpc901/disk-common/utils"
@@ -100,5 +102,81 @@ func (up *UploadService) MultipleUploadFile(multipleInfo request.UploadMultipleR
 	)
 
 	log.Infof("[upload chunk success](^_^): uploadId %s, currentChunk %s", multipleInfo.UploadId, multipleInfo.CurChunk)
+	return nil
+}
+
+func (up *UploadService) CheckChunkExist(queryInfo request.CheckChunkExistRequest) error {
+	chunkNumInRedis, err := global.RDB.GetConn().HGet(context.Background(), queryInfo.UploadId, "curChunk"+queryInfo.CurChunk).Result()
+	if err != nil {
+		log.Error("query redis failed, err:", err)
+		return err
+	}
+	if chunkNumInRedis != queryInfo.CurChunk {
+		return err
+	}
+	return nil
+}
+
+func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitRequest) error {
+
+	// 合并分块
+	err := up.MergeChunk(enum.UploadPath, info.UploadId, int(info.ChunkCount))
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	// 删除redis数据
+	global.RDB.GetConn().Del(context.Background(), info.UploadId)
+
+	// 数据持久化
+	fileMeta := model.FileMeta{
+		FileName: fmt.Sprintf("%s-%s", "file", time.Now().Format("2006-01-02 15:04:05")),
+		UploadAt: time.Now().Format("2006-01-02 15:04:05"),
+		FileSize: info.FileSize,
+		FileSha1: info.FileHash,
+	}
+	fileMeta.Location = enum.UploadPath + fileMeta.FileName
+
+	err = FileMetaServiceApp.UpdateFileMetaDB(fileMeta)
+	if err != nil {
+		log.Error("update file db failed")
+		return err
+	}
+	err = FileMetaServiceApp.UpdateUserFileMetaDB(strconv.FormatInt(uid, 10) ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
+	if err != nil {
+		log.Error("update user file db failed")
+		return err
+	}
+
+	log.Info("multiple upload success uploadId", info.UploadId)
+	return nil
+}
+
+// mergeChunk 合并分块
+func (up *UploadService) MergeChunk(path, uploadId string, chunkCount int) error {
+	// 创建一个新文件
+	newFile, err := os.Create(path + uploadId)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
+	defer newFile.Close()
+
+	// 读取分块文件
+	for i := 1; i <= chunkCount; i++ {
+		currentChunkPath := fmt.Sprintf("%s%s%d", path, uploadId, i)
+		currentChunkFile, err := os.Open(currentChunkPath)
+		if err != nil {
+			log.Error(err)
+			return err
+		}
+
+		defer currentChunkFile.Close()
+
+		// 将分块文件写入新文件
+		io.Copy(newFile, currentChunkFile)
+	}
 	return nil
 }

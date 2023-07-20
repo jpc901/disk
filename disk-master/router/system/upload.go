@@ -20,5 +20,7 @@ func (up *UploadRouter) InitUploadRouter(Router *gin.RouterGroup) {
 		uploadRouterV1.POST("fastupload", uploadApiV1.FastUploadFile)
 		uploadRouterV1.POST("mpupload/init", uploadApiV1.MpUploadFileInit)
 		uploadRouterV1.POST("mpupload/chunk", uploadApiV1.UploadPart)
+		uploadRouterV1.GET("mpupload/check", uploadApiV1.CheckChunkExist)
+		uploadRouterV1.POST("mpupload/merge", uploadApiV1.MergeChunk)
 	}
 }

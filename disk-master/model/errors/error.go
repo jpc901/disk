@@ -100,3 +100,11 @@ func NewMultipleUploadError(detail interface{}) *Error {
 		Detail: detail,
 	}
 }
+
+func NewMergeChunkError(detail interface{}) *Error {
+	return &Error{
+		Code: MergeFailedCode,
+		Message: "Merge failed",
+		Detail: detail,
+	}
+}

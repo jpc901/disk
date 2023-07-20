@@ -15,4 +15,5 @@ const (
 	GetUserFileErrorCode 	ErrorCode = 1008
 	FastUploadFileErrorCode	ErrorCode = 1009
 	MultipleInitFailedCode  ErrorCode = 1010
+	MergeFailedCode			ErrorCode = 1011
 )
