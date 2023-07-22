@@ -2,7 +2,6 @@ package user
 
 import (
 	v1 "disk-master/api/v1"
-	"disk-master/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +16,5 @@ func (u *UserRouter) InitUserRouter(Router *gin.RouterGroup) {
 		// v1
 		userRouterV1.POST("signup", userApiV1.SignUp)
 		userRouterV1.POST("signin", userApiV1.SignIn)
-		userRouterV1.GET("info", middleware.JwtAuth(), userApiV1.GetUserInfo)
 	}
 }

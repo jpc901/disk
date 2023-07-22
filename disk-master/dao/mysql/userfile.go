@@ -8,7 +8,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func OnUserFileUploadFinished(username, fileHash, filename string, fileSize int64) error {
+// 更新用户文件表
+func UpdateUserFile(username, fileHash, filename string, fileSize int64) error {
 	sqlStr := "insert ignore into tbl_user_file (`user_name`,`file_sha1`,`file_name`,`file_size`,`upload_at`) values (?,?,?,?,?)"
 	stmt, err := global.DB.GetConn().Prepare(sqlStr)
 	if err != nil {
@@ -23,8 +24,8 @@ func OnUserFileUploadFinished(username, fileHash, filename string, fileSize int6
 	return nil
 }
 
-func QueryUserFileMeta(username string, limit int) ([]*model.UserFileMeta, error) {
-	sqlStr := "select file_sha1,file_name,file_size,upload_at, last_update from tbl_user_file where user_name=? limit ?"
+func QueryUserFileMeta(username string) ([]*model.UserFileMeta, error) {
+	sqlStr := "select file_sha1,file_name,file_size,upload_at, last_update from tbl_user_file where user_name=?"
 	stmt, err := global.DB.GetConn().Prepare(sqlStr)
 	if err != nil {
 		log.Error(err)
@@ -32,7 +33,7 @@ func QueryUserFileMeta(username string, limit int) ([]*model.UserFileMeta, error
 	}
 	defer stmt.Close()
 
-	rows, err := stmt.Query(username, limit)
+	rows, err := stmt.Query(username)
 	if err != nil {
 		return nil, err
 	}

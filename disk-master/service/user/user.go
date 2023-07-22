@@ -2,7 +2,6 @@ package user
 
 import (
 	myDB "disk-master/dao/mysql"
-	"disk-master/model"
 	"disk-master/model/enum"
 	Err "disk-master/model/errors"
 	"disk-master/model/request"
@@ -66,13 +65,4 @@ func (u *UserService) SignIn(user *request.UserSignInRequest) (*response.UserLog
 		Token: token,
 		User: *userInfo,
 	}, nil
-}
-
-func (u *UserService) GetUserInfo(user *request.UserInfoRequest) (*model.User, error) {
-	userInfo, err := myDB.GetUserInfo(user.Username)
-	if err != nil {
-		log.Warn("get user info  failed err:", err)
-		return nil, err
-	}
-	return userInfo, nil
 }

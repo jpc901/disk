@@ -15,7 +15,6 @@ func (up *UploadRouter) InitUploadRouter(Router *gin.RouterGroup) {
 	uploadApiV1 := v1.ApiGroupApp.UploadApiGroup.UploadApi
 	{
 		// v1
-		uploadRouterV1.GET("upload", uploadApiV1.LoadStatic)
 		uploadRouterV1.POST("upload", uploadApiV1.UploadFile)
 		uploadRouterV1.POST("fastupload", uploadApiV1.FastUploadFile)
 		uploadRouterV1.POST("mpupload/init", uploadApiV1.MpUploadFileInit)

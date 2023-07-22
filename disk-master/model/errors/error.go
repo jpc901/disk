@@ -108,3 +108,11 @@ func NewMergeChunkError(detail interface{}) *Error {
 		Detail: detail,
 	}
 }
+
+func NewChunkNotExistError(detail interface{}) *Error {
+	return &Error{
+		Code: ChunkNotExistCode,
+		Message: "Chunk 不存在",
+		Detail: detail,
+	}
+}

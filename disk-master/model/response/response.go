@@ -49,10 +49,6 @@ func BuildOkResponse(code int, data interface{}, c *gin.Context) {
 	})
 }
 
-func BuildHtmlResponse(path string, c *gin.Context) {
-	c.HTML(http.StatusOK, path, nil)
-}
-
 func BuildErrorResponse(e error, c *gin.Context) {
 	if e == nil {
 		buildErrorResult(http.StatusInternalServerError, "internal server error", "", c)

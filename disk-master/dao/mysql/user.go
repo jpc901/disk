@@ -98,3 +98,18 @@ func CheckUserExist(username string) (error) {
 	}
 	return err
 }
+
+func GetUsername(uid int64) (string, error) {
+	sqlStr := `select user_name from tbl_user where uid = ?`
+	stmt, err := global.DB.GetConn().Prepare(sqlStr)
+	if err != nil {
+		log.Error(err)
+		return "", err
+	}
+	defer stmt.Close()
+	var username string
+	if err = stmt.QueryRow(uid).Scan(&username); err != nil {
+		return "", err
+	}
+	return username, err
+}

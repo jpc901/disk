@@ -2,6 +2,7 @@ package system
 
 import (
 	"context"
+	myDB "disk-master/dao/mysql"
 	"disk-master/global"
 	"disk-master/model"
 	"disk-master/model/enum"
@@ -10,7 +11,6 @@ import (
 	"io"
 	"mime/multipart"
 	"os"
-	"strconv"
 	"time"
 
 	util "github.com/jpc901/disk-common/utils"
@@ -19,9 +19,7 @@ import (
 
 type UploadService struct{}
 
-
-
-func (up *UploadService) UploadFile(username string, fileHeader *multipart.FileHeader) error {
+func (up *UploadService) UploadFile(uid int64, fileHeader *multipart.FileHeader) error {
 	file, err := fileHeader.Open()
 	if err != nil {
 		log.Errorf("file open failed, error: %v",err)
@@ -50,13 +48,18 @@ func (up *UploadService) UploadFile(username string, fileHeader *multipart.FileH
 	newFile.Seek(0, 0)
 	fileMeta.FileSha1 = util.FileSha1(newFile)
 
-	FileMetaServiceApp.UpdateFileMeta(fileMeta)
-	err = FileMetaServiceApp.UpdateFileMetaDB(fileMeta)
+	username, err := myDB.GetUsername(uid)
+	if err != nil {
+		log.Error("get username db failed")
+		return err
+	}
+	// 更新文件表
+	err = myDB.UpdateFile(fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize, fileMeta.Location)
 	if err != nil {
 		log.Error("update file db failed")
 		return err
 	}
-	err = FileMetaServiceApp.UpdateUserFileMetaDB(username ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
+	err = myDB.UpdateUserFile(username ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
 	if err != nil {
 		log.Error("update user file db failed")
 		return err
@@ -120,7 +123,7 @@ func (up *UploadService) CheckChunkExist(queryInfo request.CheckChunkExistReques
 func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitRequest) error {
 
 	// 合并分块
-	err := up.MergeChunk(enum.UploadPath, info.UploadId, int(info.ChunkCount))
+	err := up.MergeChunk(enum.UploadPath, info.UploadId, info.FileName, int(info.ChunkCount))
 	if err != nil {
 		log.Error(err)
 		return err
@@ -131,7 +134,7 @@ func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitReques
 
 	// 数据持久化
 	fileMeta := model.FileMeta{
-		FileName: fmt.Sprintf("%s-%s", "file", time.Now().Format("2006-01-02 15:04:05")),
+		FileName: info.FileName,
 		UploadAt: time.Now().Format("2006-01-02 15:04:05"),
 		FileSize: info.FileSize,
 		FileSha1: info.FileHash,
@@ -143,7 +146,12 @@ func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitReques
 		log.Error("update file db failed")
 		return err
 	}
-	err = FileMetaServiceApp.UpdateUserFileMetaDB(strconv.FormatInt(uid, 10) ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
+	username, err := myDB.GetUsername(uid)
+	if err != nil {
+		log.Error("get username db failed")
+		return err
+	}
+	err = FileMetaServiceApp.UpdateUserFileMetaDB(username ,fileMeta.FileSha1, info.FileName, fileMeta.FileSize)
 	if err != nil {
 		log.Error("update user file db failed")
 		return err
@@ -154,9 +162,9 @@ func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitReques
 }
 
 // mergeChunk 合并分块
-func (up *UploadService) MergeChunk(path, uploadId string, chunkCount int) error {
+func (up *UploadService) MergeChunk(path, uploadId, fileName string, chunkCount int) error {
 	// 创建一个新文件
-	newFile, err := os.Create(path + uploadId)
+	newFile, err := os.Create(path + fileName)
 	if err != nil {
 		log.Error(err)
 		return err
@@ -165,7 +173,7 @@ func (up *UploadService) MergeChunk(path, uploadId string, chunkCount int) error
 	defer newFile.Close()
 
 	// 读取分块文件
-	for i := 1; i <= chunkCount; i++ {
+	for i := 0; i < chunkCount; i++ {
 		currentChunkPath := fmt.Sprintf("%s%s%d", path, uploadId, i)
 		currentChunkFile, err := os.Open(currentChunkPath)
 		if err != nil {

@@ -41,19 +41,3 @@ func (u *UserApi) SignIn(c *gin.Context) {
 	}
 	response.BuildOkResponse(http.StatusOK, data, c)
 }
-
-func (u *UserApi) GetUserInfo(c *gin.Context) {
-	var requestData request.UserInfoRequest
-	if err := c.ShouldBind(&requestData); err != nil {
-		log.Error(err)
-		response.BuildErrorResponse(err, c)
-		return
-	}
-	data, err := userService.GetUserInfo(&requestData)
-	if err != nil {
-		log.Error("user info get failed, err: ",err)
-		response.BuildErrorResponse(err, c)
-		return
-	}
-	response.BuildOkResponse(http.StatusOK, data, c)
-}

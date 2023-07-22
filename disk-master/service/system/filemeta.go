@@ -12,15 +12,6 @@ import (
 type FileMetaService struct {}
 var FileMetaServiceApp = new(FileMetaService)
 
-var fileMetaMap map[string]model.FileMeta
-
-func init() {
-	fileMetaMap = make(map[string]model.FileMeta)
-}
-
-func (fm *FileMetaService) UpdateFileMeta(fileMeta model.FileMeta) {
-	fileMetaMap[fileMeta.FileSha1] = fileMeta
-}
 
 func (fm *FileMetaService) UpdateFile(updateRequest *request.FileUpdateRequest) (*model.FileMeta, error) {
 	if updateRequest.OperateType != "0" {
@@ -28,7 +19,7 @@ func (fm *FileMetaService) UpdateFile(updateRequest *request.FileUpdateRequest) 
 		return nil, Err.NewFileUpdateError("operate type required is 0")
 	}
 	// TODO: 要改成从缓存中取
-	curFileMeta, err := fm.GetFileMetaDB(updateRequest.FileHash)
+	curFileMeta, err := fm.GetFileMeta(updateRequest.FileHash)
 	if err != nil || curFileMeta == nil{
 		log.Error("get file meta failed")
 		return nil, err
@@ -44,18 +35,19 @@ func (fm *FileMetaService) UpdateFile(updateRequest *request.FileUpdateRequest) 
 
 // UpdateFileMetaDB:新增/更新文件元信息到mysql中
 func (fm *FileMetaService) UpdateFileMetaDB(fileMeta model.FileMeta) error {
-	return myDB.OnFileUploadFinished(fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize, fileMeta.Location)
+	return myDB.UpdateFile(fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize, fileMeta.Location)
 }
 
 // 更新文件原信息到mysql中
 func (fm *FileMetaService) UpdateUserFileMetaDB(username, fileSha1, fileName string, fileSize int64) error {
-	return myDB.OnUserFileUploadFinished(username, fileSha1, fileName, fileSize)
+	return myDB.UpdateUserFile(username, fileSha1, fileName, fileSize)
 }
 
-//GetFileMetaDB:从mysql获取文件元信息
-func (fm *FileMetaService) GetFileMetaDB(fileSha1 string) (*model.FileMeta, error) {
+
+func (fm *FileMetaService) GetFileMeta(fileSha1 string) (*model.FileMeta, error) {
 	tmpFile, err := myDB.GetFileMeta(fileSha1)
 	if tmpFile == nil || err != nil {
+		log.Info("没有任何记录")
 		return nil, err
 	}
 	fileMeta := &model.FileMeta{
@@ -67,17 +59,19 @@ func (fm *FileMetaService) GetFileMetaDB(fileSha1 string) (*model.FileMeta, erro
 	return fileMeta, nil
 }
 
-func (fm *FileMetaService) GetUserFileMetaDB(username string, limit int) ([]*model.UserFileMeta, error) {
-	return myDB.QueryUserFileMeta(username, limit)
+func (fm *FileMetaService) GetUserFileMeta(uid int64) ([]*model.UserFileMeta, error) {
+	username, err := myDB.GetUsername(uid)
+	if err != nil {
+		return nil, err
+	}
+	return myDB.QueryUserFileMeta(username)
 }
 
-// GetFileMeta:通过Sha1获取文件的元信息对象
-func (fm *FileMetaService) GetFileMeta(fileSha1 string) model.FileMeta {
-	return fileMetaMap[fileSha1]
-}
-
-// RemoveFileMeta : 删除元信息
-func (fm *FileMetaService) RemoveFileMeta(fileSha1 string) {
-	delete(fileMetaMap, fileSha1)
+func (fm *FileMetaService) DeleteUserFile(fileHash, fileName string) (error) {
+	err := myDB.DeleteUserFile(fileHash, fileName)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 

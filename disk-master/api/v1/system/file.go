@@ -21,7 +21,7 @@ func (fo *FileOperateApi) GetFileMeta(c *gin.Context) {
 		response.BuildErrorResponse(err, c)
 		return
 	}
-	data, err := fileMetaService.GetFileMetaDB(requestData.FileHash)
+	data, err := fileMetaService.GetFileMeta(requestData.FileHash)
 	if err != nil {
 		log.Error(err)
 		response.BuildErrorResponse(Err.NewGetFileMetaError("get file meta from db failed"), c)
@@ -39,7 +39,7 @@ func (fo *FileOperateApi) FileDownload(c *gin.Context) {
 	}
 	// 实际改成从环从中取，当前用户表
 	// GetFileMeta
-	fileMeta, err := fileMetaService.GetFileMetaDB(requestData.FileHash)
+	fileMeta, err := fileMetaService.GetFileMeta(requestData.FileHash)
 	if err != nil {
 		log.Error("get file meta failed,  err: ",err)
 		response.BuildErrorResponse(err, c)
@@ -59,20 +59,24 @@ func (fo *FileOperateApi) FileDownload(c *gin.Context) {
 	response.BuildOkResponse(http.StatusOK, nil, c)
 }
 
+// 未改
 func (fo *FileOperateApi) FileDelete(c *gin.Context) {
 	var requestData request.FileDeleteRequest
-	if err := c.ShouldBind(&requestData); err != nil {
+	if err := c.ShouldBindJSON(&requestData); err != nil {
 		log.Error(err)
 		response.BuildErrorResponse(err, c)
 		return
 	}
-	// 只删缓存
-	fileMeta := fileMetaService.GetFileMeta(requestData.FileHash)
-	os.Remove(fileMeta.Location)
-	fileMetaService.RemoveFileMeta(requestData.FileHash)
+	err := fileMetaService.DeleteUserFile(requestData.FileHash, requestData.FileName)
+	if err != nil {
+		log.Error(err)
+		response.BuildErrorResponse(err, c)
+		return
+	}
 	response.BuildOkResponse(http.StatusOK, nil, c)
 }
 
+// 未改
 func (fo *FileOperateApi) FileUpdate(c *gin.Context) {
 	var requestData request.FileUpdateRequest
 	if err := c.ShouldBind(&requestData); err != nil {
@@ -91,13 +95,9 @@ func (fo *FileOperateApi) FileUpdate(c *gin.Context) {
 }
 
 func (fo *FileOperateApi) QueryUserFile(c *gin.Context) {
-	var requestData request.GetUserFileRequest
-	if err := c.ShouldBind(&requestData); err != nil {
-		log.Error(err)
-		response.BuildErrorResponse(err, c)
-		return
-	}
-	data, err := fileMetaService.GetUserFileMetaDB(requestData.Username, requestData.Limit)
+	uidAny, _ := c.Get("uid")
+	uid := uidAny.(int64)
+	data, err := fileMetaService.GetUserFileMeta(uid)
 	if err != nil {
 		log.Error(err)
 		response.BuildErrorResponse(Err.NewGetUserFileError("获取用户文件失败"), c)
