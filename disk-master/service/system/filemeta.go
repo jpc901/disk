@@ -1,10 +1,10 @@
 package system
 
 import (
-	myDB "disk-master/dao/mysql"
-	"disk-master/model"
-	Err "disk-master/model/errors"
-	"disk-master/model/request"
+	myDB "github.com/jpc901/disk-common/mapper"
+	"github.com/jpc901/disk-common/model"
+	Err "github.com/jpc901/disk-common/model/errors"
+	"github.com/jpc901/disk-common/model/request"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -18,14 +18,12 @@ func (fm *FileMetaService) UpdateFile(updateRequest *request.FileUpdateRequest) 
 		log.Error("operate type required is 0")
 		return nil, Err.NewFileUpdateError("operate type required is 0")
 	}
-	// TODO: 要改成从缓存中取
 	curFileMeta, err := fm.GetFileMeta(updateRequest.FileHash)
 	if err != nil || curFileMeta == nil{
 		log.Error("get file meta failed")
 		return nil, err
 	}
 	curFileMeta.FileName = updateRequest.FileName
-	// TODO: 要改成更新缓存从而更新用户表
 	if err := fm.UpdateFileMetaDB(*curFileMeta); err != nil {
 		log.Error(err)
 		return nil, err

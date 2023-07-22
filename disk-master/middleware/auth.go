@@ -1,9 +1,10 @@
 package middleware
 
 import (
-	"disk-master/model/response"
 	"net/http"
 	"time"
+
+	"github.com/jpc901/disk-common/model/response"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jpc901/disk-common/jwt"

@@ -1,9 +1,9 @@
 package system
 
 import (
-	Err "disk-master/model/errors"
-	"disk-master/model/request"
-	"disk-master/model/response"
+	Err "github.com/jpc901/disk-common/model/errors"
+	"github.com/jpc901/disk-common/model/request"
+	"github.com/jpc901/disk-common/model/response"
 	"io"
 	"net/http"
 	"os"
@@ -59,7 +59,6 @@ func (fo *FileOperateApi) FileDownload(c *gin.Context) {
 	response.BuildOkResponse(http.StatusOK, nil, c)
 }
 
-// 未改
 func (fo *FileOperateApi) FileDelete(c *gin.Context) {
 	var requestData request.FileDeleteRequest
 	if err := c.ShouldBindJSON(&requestData); err != nil {
@@ -76,7 +75,6 @@ func (fo *FileOperateApi) FileDelete(c *gin.Context) {
 	response.BuildOkResponse(http.StatusOK, nil, c)
 }
 
-// 未改
 func (fo *FileOperateApi) FileUpdate(c *gin.Context) {
 	var requestData request.FileUpdateRequest
 	if err := c.ShouldBind(&requestData); err != nil {

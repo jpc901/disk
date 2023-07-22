@@ -1,8 +1,8 @@
 package user
 
 import (
-	"disk-master/model/request"
-	"disk-master/model/response"
+	"github.com/jpc901/disk-common/model/request"
+	"github.com/jpc901/disk-common/model/response"
 	"net/http"
 
 	"github.com/gin-gonic/gin"

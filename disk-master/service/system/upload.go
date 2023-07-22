@@ -2,16 +2,16 @@ package system
 
 import (
 	"context"
-	myDB "disk-master/dao/mysql"
 	"disk-master/global"
-	"disk-master/model"
-	"disk-master/model/enum"
-	"disk-master/model/request"
 	"fmt"
 	"io"
 	"mime/multipart"
 	"os"
 	"time"
+
+	myDB "github.com/jpc901/disk-common/mapper"
+	"github.com/jpc901/disk-common/model"
+	"github.com/jpc901/disk-common/model/request"
 
 	util "github.com/jpc901/disk-common/utils"
 	log "github.com/sirupsen/logrus"
@@ -27,7 +27,7 @@ func (up *UploadService) UploadFile(uid int64, fileHeader *multipart.FileHeader)
 	}
 	fileMeta := model.FileMeta{
 		FileName: fileHeader.Filename,
-		Location: enum.UploadPath + fileHeader.Filename,
+		Location: model.UploadPath + fileHeader.Filename,
 		UploadAt: time.Now().Format("2006-01-02 15:04:05"),
 	}
 	defer file.Close()
@@ -88,7 +88,7 @@ func (up *UploadService) MultipleUploadFile(multipleInfo request.UploadMultipleR
 	}
 	defer file.Close()
 
-	filePath := enum.UploadPath + multipleInfo.UploadId + multipleInfo.CurChunk
+	filePath := model.UploadPath + multipleInfo.UploadId + multipleInfo.CurChunk
 	newFile, err := os.Create(filePath)
 	if err != nil {
 		log.Error("create file failed, err: ", err)
@@ -123,7 +123,7 @@ func (up *UploadService) CheckChunkExist(queryInfo request.CheckChunkExistReques
 func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitRequest) error {
 
 	// 合并分块
-	err := up.MergeChunk(enum.UploadPath, info.UploadId, info.FileName, int(info.ChunkCount))
+	err := up.MergeChunk(model.UploadPath, info.UploadId, info.FileName, int(info.ChunkCount))
 	if err != nil {
 		log.Error(err)
 		return err
@@ -139,7 +139,7 @@ func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitReques
 		FileSize: info.FileSize,
 		FileSha1: info.FileHash,
 	}
-	fileMeta.Location = enum.UploadPath + fileMeta.FileName
+	fileMeta.Location = model.UploadPath + fileMeta.FileName
 
 	err = FileMetaServiceApp.UpdateFileMetaDB(fileMeta)
 	if err != nil {

@@ -1,10 +1,11 @@
 package system
 
 import (
-	Err "disk-master/model/errors"
-	"disk-master/model/request"
-	"disk-master/model/response"
 	"net/http"
+
+	Err "github.com/jpc901/disk-common/model/errors"
+	"github.com/jpc901/disk-common/model/request"
+	"github.com/jpc901/disk-common/model/response"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

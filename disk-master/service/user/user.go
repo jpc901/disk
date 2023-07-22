@@ -1,12 +1,13 @@
 package user
 
 import (
-	myDB "disk-master/dao/mysql"
-	"disk-master/model/enum"
-	Err "disk-master/model/errors"
-	"disk-master/model/request"
-	"disk-master/model/response"
 	"time"
+
+	myDB "github.com/jpc901/disk-common/mapper"
+	"github.com/jpc901/disk-common/model"
+	Err "github.com/jpc901/disk-common/model/errors"
+	"github.com/jpc901/disk-common/model/request"
+	"github.com/jpc901/disk-common/model/response"
 
 	"github.com/jpc901/disk-common/jwt"
 	"github.com/jpc901/disk-common/snowflake"
@@ -29,7 +30,7 @@ func (u *UserService) SignUp(user *request.UserSignUpRequest) error {
 		return err
 	}
 	// 对密码进行加盐及取Sha1值加密
-	encPasswd := util.Sha1([]byte(user.Password + enum.PwdSalt))
+	encPasswd := util.Sha1([]byte(user.Password + model.PwdSalt))
 	if err := myDB.UserSignUp(uuid, user.Username, encPasswd); err != nil {
 		log.Error("sign up failed, err", err)
 		return Err.NewUserSignUpError("注册失败")
@@ -40,7 +41,7 @@ func (u *UserService) SignUp(user *request.UserSignUpRequest) error {
 func (u *UserService) SignIn(user *request.UserSignInRequest) (*response.UserLogin, error) {
 
 	// 获取加密后的密码
-	user.Password = util.Sha1([]byte(user.Password + enum.PwdSalt))
+	user.Password = util.Sha1([]byte(user.Password + model.PwdSalt))
 
 	// 获取用户信息
 	userInfo, err := myDB.GetUserInfo(user.Username)
