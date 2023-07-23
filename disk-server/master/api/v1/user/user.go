@@ -9,8 +9,8 @@ import (
 	"github.com/jpc901/disk-common/model/request"
 	"github.com/jpc901/disk-common/model/response"
 
-	"disk-server/master/grpc/account"
-	accountClientPb "disk-server/master/grpc/proto/account"
+	"master/grpc/account"
+	accountClientPb "master/grpc/proto/account"
 
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"

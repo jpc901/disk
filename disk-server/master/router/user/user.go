@@ -1,7 +1,7 @@
 package user
 
 import (
-	v1 "disk-server/master/api/v1"
+	v1 "master/api/v1"
 
 	"github.com/gin-gonic/gin"
 )

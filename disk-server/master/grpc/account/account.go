@@ -1,9 +1,9 @@
 package account
 
 import (
-	"disk-server/master/global"
-	account "disk-server/master/grpc/proto/account"
 	"fmt"
+	"master/global"
+	account "master/grpc/proto/account"
 
 	log "github.com/sirupsen/logrus"
 

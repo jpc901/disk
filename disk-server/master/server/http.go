@@ -2,8 +2,8 @@ package server
 
 import (
 	"context"
-	"disk-server/master/global"
 	"fmt"
+	"master/global"
 	"net/http"
 	"sync"
 

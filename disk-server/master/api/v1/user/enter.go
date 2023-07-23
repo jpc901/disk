@@ -1,6 +1,6 @@
 package user
 
-import "disk-server/master/service"
+import "master/service"
 
 type ApiGroup struct {
 	UserApi

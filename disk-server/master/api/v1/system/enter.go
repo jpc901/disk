@@ -1,6 +1,6 @@
 package system
 
-import "disk-server/master/service"
+import "master/service"
 
 type ApiGroup struct {
 	UploadApi

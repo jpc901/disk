@@ -2,9 +2,9 @@ package system
 
 import (
 	"context"
-	"disk-server/master/global"
 	"fmt"
 	"io"
+	"master/global"
 	"mime/multipart"
 	"os"
 	"time"

@@ -1,12 +1,10 @@
 package main
 
 import (
+	"account/handler"
+	account "account/proto"
 	"fmt"
 	"net"
-
-	// "disk-server/account/handler"
-	"disk-server/account/handler"
-	account "disk-server/account/proto"
 
 	"github.com/jpc901/disk-common/conf"
 	"github.com/jpc901/disk-common/db"

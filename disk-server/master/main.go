@@ -2,10 +2,10 @@ package main
 
 import (
 	"context"
-	"disk-server/master/global"
-	"disk-server/master/grpc/account"
-	"disk-server/master/router"
-	"disk-server/master/server"
+	"master/global"
+	"master/grpc/account"
+	"master/router"
+	"master/server"
 	"os"
 	"os/signal"
 	"syscall"

@@ -1,9 +1,9 @@
 package router
 
 import (
-	"disk-server/master/router/health"
-	"disk-server/master/router/system"
-	"disk-server/master/router/user"
+	"master/router/health"
+	"master/router/system"
+	"master/router/user"
 
 	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"

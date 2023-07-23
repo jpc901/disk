@@ -1,8 +1,8 @@
 package service
 
 import (
-	"disk-server/master/service/system"
-	"disk-server/master/service/user"
+	"master/service/system"
+	"master/service/user"
 )
 
 type ServiceGroup struct {

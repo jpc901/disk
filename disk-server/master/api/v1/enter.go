@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"disk-server/master/api/v1/health"
-	"disk-server/master/api/v1/system"
-	"disk-server/master/api/v1/user"
+	"master/api/v1/health"
+	"master/api/v1/system"
+	"master/api/v1/user"
 )
 
 type ApiGroup struct{

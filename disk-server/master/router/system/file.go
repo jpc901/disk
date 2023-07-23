@@ -1,8 +1,8 @@
 package system
 
 import (
-	v1 "disk-server/master/api/v1"
-	"disk-server/master/middleware"
+	v1 "master/api/v1"
+	"master/middleware"
 
 	"github.com/gin-gonic/gin"
 )

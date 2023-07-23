@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	account "disk-server/account/proto"
+	account "account/proto"
 
 	"github.com/jpc901/disk-common/jwt"
 	myDB "github.com/jpc901/disk-common/mapper"
