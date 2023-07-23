@@ -15,12 +15,13 @@ import (
 
 
 func Init() {
-	conf.GetConfig().InitConfig("../config.yaml")
+	conf.GetConfig().InitConfig(".")
 	db.GetDBInstance().Init(*conf.GetConfig().MySQLConfig)
 }
 
 func main() {
-	lister, err := net.Listen("tcp", ":8972")
+	Init()
+	lister, err := net.Listen("tcp", fmt.Sprintf(":%d", conf.GetConfig().AccountConfig.Port))
 	if err != nil {
 		fmt.Printf("failed to listen: %v", err)
 		return

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>sign up</title>
+    <!-- // 引入jquery -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
+
+    <!-- 引入index.css -->
+    <link rel="stylesheet" href="/static/css/index.css">
+</head>
+<body>
+    <form action="/api/v1/user/signup" method="post">
+        <input type="text" name="username" placeholder="username"><br/>
+        <input type="password" name="password" placeholder="password"><br/>
+        <input type="password" name="confirmpassword" placeholder="password2"><br/>
+        <!-- // 触发函数的点击按钮 -->
+        <input type="button" value="signup" onclick="signup()">
+    </form>
+    <a href="/static/view/signin.html">sign in</a>
+
+    <script>
+        function signup() {
+            data = JSON.stringify({
+                username: $('input[name="username"]').val(),
+                password: $('input[name="password"]').val(),
+                confirm_password: $('input[name="confirmpassword"]').val()
+            })
+            console.log(data)
+            $.ajax({
+                url: '/api/v1/user/signup',
+                type: 'POST',
+                contentType: 'application/json',
+                data: data,
+                success(res) {
+                    window.location.href = '/static/view/signin.html'
+                },
+                error(res) {
+                    alert('注册失败...')
+                }
+            })
+        }
+
+        function onOpen() {
+            $('input[name="username"]').focus()
+        }
+
+        $(document).ready(function() {
+            onOpen()
+        })
+    </script>
+</body>
+</html>
