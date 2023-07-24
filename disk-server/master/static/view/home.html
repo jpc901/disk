@@ -7,6 +7,9 @@
     <!-- 引入jquery -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
 
+    <!-- 引入crypto-js库 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+
     <!-- 引入index.css -->
     <link rel="stylesheet" href="/static/css/index.css">
 </head>
@@ -17,7 +20,7 @@
     <h4>signup_time:&nbsp;<span id="signup_time">...</span></h4>
 
     <form id="uploadForm" enctype="multipart/form-data">
-        <input type="file" name="file"><br/>
+        <input id="uploadFile-01" type="file" name="file"><br/>
         <input type="button" value="上传文件" onclick="upload()">
     </form>
     <h4 id="uploading" style="color: red;"></h4>
@@ -100,7 +103,7 @@
             // 分段上传变量初始化
             multipartFileSize = file.size
             multipartFileName = file.name
-            multipartChunkSize = Math.ceil(multipartFileSize / 10)
+            multipartChunkSize = 1024 * 512
             multipartChunkCount = Math.ceil(multipartFileSize / multipartChunkSize)
             multipartCurrentChunk = 0
 
@@ -312,14 +315,11 @@
         function calculateFileHash(file, callback) {
             const reader = new FileReader();
             reader.onload = function(event) {
-                const arrayBuffer = event.target.result;
-                crypto.subtle.digest('SHA-1', arrayBuffer)
-                .then(hashBuffer => {
-                    const hashArray = Array.from(new Uint8Array(hashBuffer));
-                    const hashHex = hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('');
-                    callback(null, hashHex); // 通过回调函数返回SHA-1字符串
-                })
-                .catch(error => callback(error));
+                let txt = event.target.result;
+                let workArray = CryptoJS.lib.WordArray.create(txt);
+                sha1 = CryptoJS.SHA1(workArray).toString();
+                console.log("fileSHA1: " + sha1);
+                callback(null, sha1);
             };
             reader.onerror = function() {
                 callback(new Error('Failed to read file.'));
@@ -337,7 +337,7 @@
 
             var formData = new FormData($('#uploadForm')[0]); // 创建FormData对象
 
-            const fileInput = document.querySelector('input[type="file"]');
+            const fileInput = document.getElementById('uploadFile-01');
             const file = fileInput.files[0];
             const fileName = file.name;
             // 等待reader读取file计算sha1后调用此回调函数
