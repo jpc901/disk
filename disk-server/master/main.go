@@ -28,6 +28,8 @@ func Init(){
 func main() {
 	Init()
 	defer global.RDB.GetConn().Close()
+
+	
 	// start http server
 	router := router.Init()
 	httpServer := server.GetHttpServerInstance(router)
