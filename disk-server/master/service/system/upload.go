@@ -2,6 +2,7 @@ package system
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"master/global"
@@ -12,6 +13,7 @@ import (
 	myDB "github.com/jpc901/disk-common/mapper"
 	"github.com/jpc901/disk-common/model"
 	"github.com/jpc901/disk-common/model/request"
+	mq "github.com/jpc901/disk-common/rabbitmq"
 
 	util "github.com/jpc901/disk-common/utils"
 	log "github.com/sirupsen/logrus"
@@ -22,7 +24,7 @@ type UploadService struct{}
 func (up *UploadService) UploadFile(uid int64, fileHeader *multipart.FileHeader) error {
 	file, err := fileHeader.Open()
 	if err != nil {
-		log.Errorf("file open failed, error: %v",err)
+		log.Errorf("file open failed, error: %v", err)
 		return err
 	}
 	fileMeta := model.FileMeta{
@@ -59,11 +61,20 @@ func (up *UploadService) UploadFile(uid int64, fileHeader *multipart.FileHeader)
 		log.Error("update file db failed")
 		return err
 	}
-	err = myDB.UpdateUserFile(username ,fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
+	err = myDB.UpdateUserFile(username, fileMeta.FileSha1, fileMeta.FileName, fileMeta.FileSize)
 	if err != nil {
 		log.Error("update user file db failed")
 		return err
 	}
+
+	// 文件上传到rabbitmq
+	msgJson, _ := json.Marshal(fileMeta)
+	err = mq.Send(global.Config.RabbitMQConfig, msgJson)
+	if err != nil {
+		log.Error(err)
+		return err
+	}
+
 	log.Info("success [^_^]")
 	return nil
 }
@@ -151,7 +162,7 @@ func (up *UploadService) MergeAndSave(uid int64, info request.MultipleInitReques
 		log.Error("get username db failed")
 		return err
 	}
-	err = FileMetaServiceApp.UpdateUserFileMetaDB(username ,fileMeta.FileSha1, info.FileName, fileMeta.FileSize)
+	err = FileMetaServiceApp.UpdateUserFileMetaDB(username, fileMeta.FileSha1, info.FileName, fileMeta.FileSize)
 	if err != nil {
 		log.Error("update user file db failed")
 		return err
