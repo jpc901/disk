@@ -4,6 +4,7 @@ import (
 	"context"
 	"master/global"
 	"master/grpc/account"
+	ossClient "master/oss"
 	"master/router"
 	"master/server"
 	"os"
@@ -14,22 +15,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func Init(){
+func Init() {
 	global.Config.InitConfig(".")
 	log.Debug(global.Config.ServerConfig.Port)
 	global.DB.Init(*global.Config.MySQLConfig)
 	global.RDB.Init(*global.Config.RedisConfig)
 	err := account.InitClient()
 	if err != nil {
-		log.Error(err)
+		log.Errorf("account init failed %v", err)
 	}
+	ossClient.GetClient().Init()
 }
 
 func main() {
 	Init()
 	defer global.RDB.GetConn().Close()
 
-	
+	go ossClient.GetClient().UploadFile()
+
 	// start http server
 	router := router.Init()
 	httpServer := server.GetHttpServerInstance(router)

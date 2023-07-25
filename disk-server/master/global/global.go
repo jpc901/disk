@@ -8,6 +8,6 @@ import (
 
 var (
 	Config = conf.GetConfig()
-	DB = db.GetDBInstance()
-	RDB = redis.GetRDBInstance()
+	DB     = db.GetDBInstance()
+	RDB    = redis.GetRDBInstance()
 )

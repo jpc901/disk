@@ -3,21 +3,72 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>sign in</title>
-    <!-- // 引入jquery -->
+    <title>登录</title>
+    <!-- 引入jquery -->
     <script src="https://cdn.bootcdn.net/ajax/libs/jquery/3.6.0/jquery.js"></script>
 
     <!-- 引入index.css -->
     <link rel="stylesheet" href="/static/css/index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        form {
+            width: 300px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="button"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        input[type="button"] {
+            background-color: #007bff;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        input[type="button"]:hover {
+            background-color: #0056b3;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+    </style>
 </head>
 <body>
     <form action="/api/v1/user/signin" method="post">
-        <input type="text" name="username" placeholder="username"><br/>
-        <input type="password" name="password" placeholder="password"><br/>
-        <!-- // 触发函数的点击按钮 -->
-        <input type="button" value="signin" onclick="signin()">
+        <input type="text" name="username" placeholder="用户名"><br/>
+        <input type="password" name="password" placeholder="密码"><br/>
+        <!-- 触发函数的点击按钮 -->
+        <input type="button" value="登录" onclick="signin()" class="login-btn">
+        <a type="button" href="/static/view/signup.html" class="register-btn">注册</a>
     </form>
-    <a href="/static/view/signup.html">sign up</a>
 
     <script>
         function signin() {

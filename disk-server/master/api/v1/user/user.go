@@ -20,14 +20,15 @@ type UserApi struct{}
 
 func (u *UserApi) SignUp(c *gin.Context) {
 	var requestData request.UserSignUpRequest
-	if err := c.ShouldBind(&requestData); err != nil {
+	if err := c.ShouldBindJSON(&requestData); err != nil {
 		log.Error(err)
 		response.BuildErrorResponse(err, c)
 		return
 	}
+
 	req := &accountClientPb.UserSignUpRequest{
-		Username: requestData.Username,
-		Password: requestData.Password,
+		Username:        requestData.Username,
+		Password:        requestData.Password,
 		ConfirmPassword: requestData.Password,
 	}
 
@@ -56,13 +57,13 @@ func (u *UserApi) SignIn(c *gin.Context) {
 		return
 	}
 	user := &model.User{
-		Uid: resp.Uid,
+		Uid:      resp.Uid,
 		Username: resp.Username,
 		SignUpAt: resp.SignUpAt,
 	}
 	data := &response.UserLogin{
 		Token: resp.Token,
-		User: *user,
+		User:  *user,
 	}
 	response.BuildOkResponse(http.StatusOK, data, c)
 }
