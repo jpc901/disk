@@ -1,0 +1,36 @@
+apiVersion: apps/v1 # deployment api 版本
+kind: Deployment # 资源类型为 deployment
+metadata: # 元信息
+  labels: # 标签
+    app: account-deploy # 具体的 key: value 配置形式
+  name: account-deploy # deployment 的名字
+  namespace: disk # 所在的命名空间
+spec:
+  replicas: 1 # 期望副本数
+  revisionHistoryLimit: 10 # 进行滚动更新后，保留的历史版本数
+  selector: # 选择器，用于找到匹配的 RS
+    matchLabels: # 按照标签匹配
+      app: account-deploy # 匹配的标签key/value
+  strategy: # 更新策略
+    rollingUpdate: # 滚动更新配置
+      maxSurge: 25% # 进行滚动更新时，更新的个数最多可以超过期望副本数的个数/比例
+      maxUnavailable: 25% # 进行滚动更新时，最大不可用比例更新比例，表示在所有副本数中，最多可以有多少个不更新成功
+    type: RollingUpdate # 更新类型，采用滚动更新
+  template: # pod 模板
+    metadata: # pod 的元信息
+      labels: # pod 的标签
+        app: account-deploy
+    spec: # pod 期望信息
+      containers:
+      - image: jiapengcheng/disk-account-image:v3-amd64 # 镜像
+        imagePullPolicy: IfNotPresent # 拉取策略
+        name: account # 容器名称
+        resources:
+          limits: # 最多可以用多少资源
+            cpu: 200m # 限制 cpu 最多使用 0.2 个核心
+            memory: 256Mi # 限制 最多使用 256兆
+        ports: 
+          - containerPort: 18081
+      restartPolicy: Always # 重启策略
+      terminationGracePeriodSeconds: 30 # 删除操作最多宽限多长时间
+
