@@ -28,7 +28,7 @@ spec:
         resources:
           limits: # 最多可以用多少资源
             cpu: 200m # 限制 cpu 最多使用 0.2 个核心
-            memory: 512Mi # 限制 
+            memory: 256Mi # 限制 
         ports: 
           - containerPort: 5672
           - containerPort: 15672
